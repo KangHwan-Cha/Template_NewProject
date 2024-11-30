@@ -1,11 +1,12 @@
-import subprocess
 import re
+import os
+import subprocess
 
 # Main.py 입력
 package_path = "./Main.py"
 
 
-# Main_Widget.py 에서 version과 deploy 여부를 리턴
+# Main.py 에서 version과 deploy 여부를 리턴
 def get_develop_info():
     global package_path
     with open(package_path, "r", encoding="utf-8") as f:
@@ -21,20 +22,34 @@ def get_develop_info():
 
 
 # cmd에서 pyinstaller 실행
-def run_pyinstaller_with_version():
+def run_pyinstaller_with_version() -> bool:
     program_name, version = get_develop_info()
     #     cmd = f'pyinstaller --clean --onefile --icon=..\..\Ico\Read_hwp_x.ico \
     # --noconsole --name "HWPX-EXCEL 변환기 - {version} 🚗" ..\Main_Widget.py'
-    cmd = f'pyinstaller --clean --onefile --name "{program_name}-ver_{version}" {package_path}'
 
-    print(cmd)
-    subprocess.run(cmd, shell=True)
+    try:
+        cmd = f'pyinstaller --clean --onefile --name "{program_name}-ver_{version}" {package_path}'
+
+        print(cmd)
+        subprocess.run(cmd, shell=True)
+        return True
+    except Exception as e:
+        print(e)
+        return False
 
 
 if __name__ == "__main__":
     print(get_develop_info())
 
-    run_pyinstaller_with_version()
-    print("~~~~~~~~~~~~~~")
-    print("     Done     ")
-    print("~~~~~~~~~~~~~~")
+    # run_pyinstaller_with_version()
+
+    if run_pyinstaller_with_version():
+        print("~~~~~~~~~~~~~~")
+        print("     Done     ")
+        print("~~~~~~~~~~~~~~")
+        os.startfile(os.path.join(os.getcwd(), "./dist"))
+
+    else:
+        print("~~~~~~~~~~~~~~")
+        print("     Fail     ")
+        print("~~~~~~~~~~~~~~")
